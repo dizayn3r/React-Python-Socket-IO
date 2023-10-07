@@ -1,11 +1,44 @@
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { socket } from './socket.js';
+import ConnectionState from './components/ConnectionState.js';
+import ConnectionManager from './components/ConnectionManager.js';
+import MyForm from './components/MyForm.js';
+import {Events} from './components/MyEvents.js';
 
-function App() {
+export default function App() {
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState([]);
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onFooEvent(value) {
+      setFooEvents(previous => [...previous, value]);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('foo', onFooEvent);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('foo', onFooEvent);
+    };
+  }, []);
+
   return (
     <div className="App">
-      <h1>This is demo for socket io</h1>
+      <ConnectionState isConnected={ isConnected } />
+      <Events events={ fooEvents } />
+      <ConnectionManager />
+      <MyForm />
     </div>
   );
 }
-
-export default App;
