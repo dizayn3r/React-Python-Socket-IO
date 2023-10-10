@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Login</title>
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.6.0.min.js"></script>
+        <script>
+            console.log('start from here')
+            let $DOM = $(document);
+            $DOM.on('click', '#login', function() {
+
+                console.log("login clicked");
+                data = {}
+                data["username"] = $("#username").val();
+                data["password"] = $("#password").val();
+                console.log("response okay")
+                console.log(data);
+                $.ajax({
+                    type: 'post',
+                    data: JSON.stringify(data),
+                    url: '/login',
+                    success: function(result) {
+                        if (result.success) {
+                            console.log("response okay")
+                            window.location.href = "/dashboard";
+                        }
+                        else {
+                            alertify.set('notifier', 'position', 'top-right');
+                            alertify.error(result.message);
+                        }
+                    }
+                });
+            });
+    </script>
+    </head>
+    <body>
+        <h1>Login</h1>
+        <form method="POST">
+            <input id="username" type="text" name="username" placeholder="Username" required>
+            <input id="password" type="password" name="password" placeholder="Password" required>
+            <button id = "login" type="submit" >Login</button>
+        </form>
+    </body>
+</html>
